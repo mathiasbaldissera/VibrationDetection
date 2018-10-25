@@ -5,6 +5,27 @@ android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 tools:ignore="TextFields,HardcodedText" >
 
+    <Button
+        android:id="@+id/start_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="Start" />
+
+    <Button
+        android:id="@+id/stop_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:text="Stop" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"></LinearLayout>
+
     <LinearLayout
         android:id="@+id/top_buttons_container"
         android:layout_width="match_parent"
@@ -13,14 +34,23 @@ tools:ignore="TextFields,HardcodedText" >
         android:layout_centerHorizontal="true"
         android:orientation="horizontal">
 
-        <ToggleButton
-            android:id="@+id/btn_connection"
+        <Button
+            android:id="@+id/btn_open"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/label"
             android:layout_weight="1"
-            android:text="ToggleButton"
-            android:textOff="Connect"
-            android:textOn="Disconnect" />
+            android:text="Open" />
+
+        <Button
+            android:id="@+id/btn_close"
+            android:layout_width="76dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/label"
+            android:layout_weight="1"
+            android:text="Close" />
 
         <Button
             android:id="@+id/btn_graphs"
@@ -37,79 +67,67 @@ tools:ignore="TextFields,HardcodedText" >
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Configs" />
-
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/acegiro_container"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/predictedText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/null"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="50dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Giroscopio" />
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Acelerometro" />
-    </LinearLayout>
+        android:layout_above="@+id/bottom_buttons_container"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/top_buttons_container"
+        android:layout_margin="3dp"
+        android:background="#ececec"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:minWidth="10dp"
+        android:textColor="@android:color/black"
+        android:textSize="30sp" />
 
     <LinearLayout
-        android:id="@+id/graph_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/top_buttons_container"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="50dp"
+        android:id="@+id/bottom_buttons_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:orientation="vertical">
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphx_giro1"
+        <Button
+            android:id="@+id/btn_apagar_ultima_letra"
             android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:layout_below="@+id/graphx_giro"
-            android:layout_alignStart="@+id/graph_container"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp" />
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/space"
+            android:layout_centerHorizontal="true"
+            android:text="Delete last letter" />
 
-        <Space
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="10dp" />
+            android:layout_height="match_parent"
+            android:layout_below="@+id/btn_apagar_ultima_letra"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphy_giro2"
-            android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:layout_below="@+id/graphx_giro"
-            android:layout_alignParentStart="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp" />
+            <Button
+                android:id="@+id/btn_apagar_palavra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/space"
+                android:layout_alignRight="@+id/space"
+                android:layout_below="@+id/btn_apagar_ultima_letra"
+                android:layout_centerHorizontal="true"
+                android:text="delete phrase" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="10dp" />
+            <Button
+                android:id="@+id/btn_speak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/space"
+                android:layout_below="@+id/btn_apagar_ultima_letra"
+                android:layout_centerHorizontal="true"
+                android:text="SPEAK" />
+        </LinearLayout>
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphz_giro3"
-            android:layout_width="match_parent"
-            android:layout_height="130dp"
-            android:layout_below="@+id/graphy_giro"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="false"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp" />
     </LinearLayout>
 
 </RelativeLayout>

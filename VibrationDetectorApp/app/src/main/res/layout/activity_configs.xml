@@ -8,371 +8,65 @@
     android:padding="7dp"
     tools:context=".ConfigsActivity">
 
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp">
+        android:lineSpacingExtra="18sp"
+        android:text="Locale:"
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg1"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Giroscopio 1" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg2"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Giroscopio 2" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg3"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Giroscopio 3" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg4"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Giroscopio 4" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg5"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Giroscopio 5" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg6"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg6"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Giroscopio 6" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <RadioGroup
+        android:id="@+id/configs_rg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:orientation="horizontal"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp">
+        android:layout_marginLeft="10dp"
+        android:checkedButton="@+id/radioButton">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <RadioButton
+            android:id="@+id/config_rb_ptBR"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:text="ptBR" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg1"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Acelerometro 1" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg2"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Acelerometro 2" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg3"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Acelerometro 3" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <RadioButton
+            android:id="@+id/config_rb_US"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:text="US" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg4"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Acelerometro 4" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg5"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Acelerometro 5" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <View
-                    android:id="@+id/csg6"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0"
-                    android:background="@android:color/background_dark"
-                    android:foregroundGravity="center_horizontal" />
-
-                <CheckBox
-                    android:id="@+id/checkBox_sg6"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:checked="true"
-                    android:text="Acelerometro 6" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </RadioGroup>
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Escala dos graficos"
-        android:textAppearance="@style/TextAppearance.AppCompat.Notification.Title" />
+        android:lineSpacingExtra="18sp"
+        android:text="Glove:"
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
 
-    <SeekBar
-        android:id="@+id/seekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/textView2"
+    <RadioGroup
+        android:id="@+id/configs_rg2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tempo a cada salvamento"
-        android:textAppearance="@style/TextAppearance.AppCompat.Notification.Title" />
+        android:layout_marginLeft="10dp"
+        android:layout_weight="0">
 
-    <SeekBar
-        android:id="@+id/seekBar2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="50" />
+        <RadioButton
+            android:id="@+id/config_rb_LM"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="LUVAMOUSE" />
 
+        <RadioButton
+            android:id="@+id/config_rb_LG"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="LuvaGestos" />
+    </RadioGroup>
 </LinearLayout>
