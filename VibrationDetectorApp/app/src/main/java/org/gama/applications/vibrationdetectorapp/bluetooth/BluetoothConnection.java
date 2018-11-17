@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.gama.alessandrogirardi.comunicacao_bluetooth_luva.uncoupledprograms.DataSaveCsv;
+import org.gama.applications.vibrationdetectorapp.uncoupledprograms.DataSaveCsv;
 
 import org.gama.applications.vibrationdetectorapp.uncoupled.GloveSensors;
 
@@ -64,10 +64,22 @@ public class BluetoothConnection {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             callingActivity.startActivityForResult(enableBluetooth, REQUEST_ENABLE_BT);
         } else {
-
             findPairedDevices();
         }
 
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
+            try {
+                findPairedDevices();
+            } catch (IOException e) {
+                Log.d("onActivityResult", e.getMessage());
+            }
+        } else {
+            Toast.makeText(callingActivity, "You need to turn on the Bluetooth to use the app functions with the glove", Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -87,20 +99,8 @@ public class BluetoothConnection {
         return mmSocket.isConnected();
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
-            try {
-                findPairedDevices();
-            } catch (IOException e) {
-                Log.d("onActivityResult", e.getMessage());
-            }
-        } else {
-            Toast.makeText(callingActivity, "You need to turn on the Bluetooth to use the app functions with the glove", Toast.LENGTH_LONG).show();
-        }
 
-    }
-
-    private void findPairedDevices() throws IOException {
+    public void findPairedDevices() throws IOException {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
@@ -111,14 +111,20 @@ public class BluetoothConnection {
             }
         }
         if (mmDevice == null) {
-            Toast.makeText(callingActivity, "The glove isn't paired with this device", Toast.LENGTH_LONG).show();
+            Toast.makeText(callingActivity, "The sensors isn't paired with this device", Toast.LENGTH_LONG).show();
+            throw new IOException("Sem conexão com os sensores");
         } else {
-            connectWithTheGlove();
+            try {
+                connectWithTheSensors();
+            } catch (IOException ex) {
+                Toast.makeText(callingActivity, "Connection with sensors problem", Toast.LENGTH_LONG).show();
+                throw new IOException("Sem conexão com os sensores");
+            }
             readData();
         }
     }
 
-    private void connectWithTheGlove() throws IOException {
+    private void connectWithTheSensors() throws IOException {
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
         mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
         mmSocket.connect();
@@ -129,7 +135,6 @@ public class BluetoothConnection {
         byte sinc[] = new byte[1];
         sinc[0] = 0x55;
         mmOutputStream.write(sinc);
-        //mmOutputStream.write(msg.getBytes("US-ASCII"));
         Log.d("BT.sendAutoBaudCode", "Caractere U Sent");
     }
 

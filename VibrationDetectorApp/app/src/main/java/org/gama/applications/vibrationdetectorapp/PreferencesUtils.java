@@ -10,12 +10,12 @@ public class PreferencesUtils {
         context=c;
     }
 
-    public int getSavedLocaleCheckboxID(){
+    /*public int getSavedLocaleCheckboxID(){
         return context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
                 .getInt("locale", LocaleConsts.LOCALE_US);
-    }
+    }*/
 
-    public Locale getArchivedLocale(){
+    /*public Locale getArchivedLocale(){
         Locale retorno;
 
         switch (getSavedLocaleCheckboxID()){
@@ -28,7 +28,8 @@ public class PreferencesUtils {
             default: retorno=Locale.US;
         }
         return retorno;
-    }
+    }*/
+
     public void saveLocaleCheckboxID(int id){
         context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE).edit()
                 .putInt("locale", id).apply();
@@ -37,21 +38,13 @@ public class PreferencesUtils {
 
 
     public String getSavedGlove(){
-
-        switch (getSavedGloveId()){
-            case R.id.config_rb_LM:
-                return "LUVAMOUSE";
-            case R.id.config_rb_LG:
-                return "LuvaGestos";
-            default:
-                return "LUVAMOUSE";
-        }
+        return "LUVAMOUSE";
     }
 
-    public int getSavedGloveId() {
+    /*public int getSavedGloveId() {
         return context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE)
                 .getInt("glove", R.id.config_rb_LM);
-    }
+    }*/
 
     public void saveGloveId(int i) {
         context.getSharedPreferences(context.getString(R.string.app_name), Context.MODE_PRIVATE).edit()

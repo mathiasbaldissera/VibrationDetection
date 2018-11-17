@@ -1,30 +1,190 @@
 package org.gama.applications.vibrationdetectorapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
+import android.widget.ToggleButton;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
 import org.gama.applications.vibrationdetectorapp.bluetooth.BluetoothConnection;
-import org.gama.applications.vibrationdetectorapp.uncoupled.IPredictScreen;
+import org.gama.applications.vibrationdetectorapp.bluetooth.IPostAppendScreen;
+import org.gama.applications.vibrationdetectorapp.uncoupled.GloveSensors;
+import java.util.ConcurrentModificationException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.Math;
 
 
-public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, IPredictScreen {
+public class MainActivity extends AppCompatActivity implements IPostAppendScreen {
 
-    private TextToSpeech tts;
-    private TextView predictedText;
-    private TextView myLabel;
     private BluetoothConnection bluetoothConnection = BluetoothConnection.getInstance(this);
 
+    static int max_x_points = 600;
+
+    // Linhas giroscopios
+    static LineGraphSeries<DataPoint> seriesx1_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy1_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz1_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx2_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy2_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz2_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx3_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy3_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz3_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx4_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy4_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz4_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx5_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy5_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz5_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx6_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy6_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz6_giro = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    //Linhas accelerometros
+    static LineGraphSeries<DataPoint> seriesx1_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy1_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz1_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx2_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy2_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz2_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx3_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy3_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz3_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx4_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy4_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz4_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx5_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy5_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz5_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    static LineGraphSeries<DataPoint> seriesx6_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesy6_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+    static LineGraphSeries<DataPoint> seriesz6_acc = new LineGraphSeries<>(new DataPoint[]{new DataPoint(0, 0)});
+
+    private GraphView graph_gx;
+    private GraphView graph_gy;
+    private GraphView graph_gz;
+
+    private GraphView graph_ax;
+    private GraphView graph_ay;
+    private GraphView graph_az;
+
+    private int save_interval;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        //Carregamento da activity
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(R.string.app_name);
+        }
+
+        //Carregamento do intevalo de salvamento
+        SharedPreferences preferences = getSharedPreferences( "configurations", MODE_PRIVATE);
+        save_interval = 10 + preferences.getInt("time", 0);
+
+        //Carregamento e definição dos graficos
+        final LinearLayout graph_acc = findViewById(R.id.graph_list_a);
+        final LinearLayout graph_giro = findViewById(R.id.graph_list_g);
+
+        graph_gx = findViewById(R.id.graphx_giro);
+        graph_gy = findViewById(R.id.graphy_giro);
+        graph_gz = findViewById(R.id.graphz_giro);
+
+        graph_ax = findViewById(R.id.graphx_acc);
+        graph_ay = findViewById(R.id.graphy_acc);
+        graph_az = findViewById(R.id.graphz_acc);
+
+        setupGGraph();
+        setupAGraph();
+
+
+        //Configuração de botoes
+        final ToggleButton toggle = findViewById(R.id.btn_switch);
+        toggle.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener(){
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+                if (isChecked) {
+                    graph_acc.setVisibility(View.VISIBLE);
+                    graph_giro.setVisibility(View.GONE);
+                } else {
+                    graph_acc.setVisibility(View.GONE);
+                    graph_giro.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+
+        final Button btn_config = findViewById(R.id.btn_config);
+        btn_config.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("lockPredict", "teste");
+                openConfig(v);
+            }
+        });
+
+        final ToggleButton connect = findViewById(R.id.btn_connect);
+        connect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    if (!PermissionUtils.INSTANCE.validate(MainActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        Toast.makeText(MainActivity.this, "Please, give storage permission",Toast.LENGTH_SHORT).show();
+                    } else {
+                        try {
+                            bluetoothConnection.tryToConnect(new PreferencesUtils(MainActivity.this).getSavedGlove());
+                        } catch (IOException ex) {
+                            Toast.makeText(MainActivity.this, "Problem with Bluetooth Connection",Toast.LENGTH_SHORT).show();
+                            Log.d("tryToConnect", ex.getMessage());
+                            connect.setChecked(false);
+                        }
+                    }
+                } else {
+                    if(bluetoothConnection.isConnected()) {
+                        try {
+                            bluetoothConnection.disconnect();
+                        } catch (IOException ex) {
+                            Log.d("tryDisconnect", ex.getMessage());
+                        }
+                    }
+                }
+            }
+        });
+
+
+        BluetoothConnection.getInstance(this).putPutDataAppendRunnable(this);
+
+    }
+
+    public void openConfig(View view) {
+        Intent config = new Intent(this, ConfigsActivity.class);
+        startActivity(config);
+    }
 
     public static void copyStream(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
@@ -35,182 +195,394 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-
-
-        super.onCreate(savedInstanceState);
-
-
-        setContentView(R.layout.activity_main);
-        tts = new TextToSpeech(this, this);
-
-        // ------------- Predicts Things ------
-
-        predictedText = findViewById(R.id.predictedText);
-
-        Button btn_speak = findViewById(R.id.btn_speak);
-        btn_speak.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                speak(predictedText.getText().toString());
-            }
-        });
-
-        Button btn_apagar = findViewById(R.id.btn_apagar_ultima_letra);
-        btn_apagar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String palavra = predictedText.getText().toString();
-                StringBuilder novaPalavra = new StringBuilder();
-                if (palavra.length() > 0) {
-                    for (int i = 0; i < palavra.length() - 1; i++)
-                        novaPalavra.append(palavra.charAt(i));
-
-                }
-                predictedText.setText(novaPalavra.toString());
-
-
-            }
-        });
-        Button btn_apagar_palavra = findViewById(R.id.btn_apagar_palavra);
-        btn_apagar_palavra.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                predictedText.setText("");
-
-            }
-        });
-
-        myLabel = findViewById(R.id.label);
-
-
-        //configButton
-        Button configButton = findViewById(R.id.btn_config);
-        configButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, ConfigsActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        //graph button
-        Button graphButton = findViewById(R.id.btn_graphs);
-        graphButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, GraphActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        //Open Button
-        Button openButton = findViewById(R.id.btn_open);
-        openButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                if (!PermissionUtils.INSTANCE.validate(MainActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    Toast.makeText(MainActivity.this, "Please, give storage permission",Toast.LENGTH_SHORT).show();
-                } else {
-                    try {
-                        bluetoothConnection.tryToConnect(new PreferencesUtils(MainActivity.this).getSavedGlove());
-                    } catch (IOException ex) {
-                        Log.d("openButtonEX", ex.getMessage());
-                    }
-                }
-            }
-        });
-
-        //Close button
-        Button closeButton = findViewById(R.id.btn_close);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                try {
-                    bluetoothConnection.disconnect();
-                } catch (IOException ex) {
-                    Log.d("closeButtonEX", ex.getMessage());
-
-                }
-            }
-        });
-
-        Button start = findViewById(R.id.start_btn);
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-///TODO: removed svc
-           }
-        });
-        Button stop = findViewById(R.id.stop_btn);
-        stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-///TODO: removed svc
-            }
-        });
-    }
-
-    @Override
-    public void onInit(int status) {
-    }
-
-    private void speak(String fala) {
-        if (tts != null) {
-            int result = tts.setLanguage(new PreferencesUtils(this).getArchivedLocale());
-            if (result == TextToSpeech.LANG_MISSING_DATA ||
-                    result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Toast.makeText(this, "Language not suported", Toast.LENGTH_LONG).show();
-            } else {
-                tts.speak(fala, TextToSpeech.QUEUE_FLUSH, null);
-            }
-        }
-
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-///TODO: removed svc
+
+        //Carregamento das preferencias
+        SharedPreferences preferences = getSharedPreferences( "configurations", MODE_PRIVATE);
+
+        //Carregamento do valor da escala
+        double scale = preferences.getFloat("scale", 0);
+        scale = Math.pow(10, (-3.0 + scale));
+        Log.d("graphScale", String.format("%f %f", -scale, scale));
+
+        //Carregamento do start(começa no 0 ou no -scale)
+        boolean start = preferences.getBoolean("start", true);
+
+        //Definição da Viewport
+        if(!start) {
+            graph_ax.getViewport().setMinY(-scale);
+            graph_ay.getViewport().setMinY(-scale);
+            graph_az.getViewport().setMinY(-scale);
+            graph_gx.getViewport().setMinY(-scale);
+            graph_gy.getViewport().setMinY(-scale);
+            graph_gz.getViewport().setMinY(-scale);
+        } else {
+            graph_ax.getViewport().setMinY(0);
+            graph_ay.getViewport().setMinY(0);
+            graph_az.getViewport().setMinY(0);
+            graph_gx.getViewport().setMinY(0);
+            graph_gy.getViewport().setMinY(0);
+            graph_gz.getViewport().setMinY(0);
+        }
+
+        graph_ax.getViewport().setMaxY(scale);
+        graph_ay.getViewport().setMaxY(scale);
+        graph_az.getViewport().setMaxY(scale);
+        graph_gx.getViewport().setMaxY(scale);
+        graph_gy.getViewport().setMaxY(scale);
+        graph_gz.getViewport().setMaxY(scale);
+
+
+        //Configuração das series com base nos checkbox dos sensores
+        if (preferences.getBoolean("sensor1g", true)){
+            if (!graph_gx.getSeries().contains(seriesx1_giro)) {
+                graph_gx.addSeries(seriesx1_giro);
+                graph_gy.addSeries(seriesy1_giro);
+                graph_gz.addSeries(seriesz1_giro);
+            }
+        } else {
+            graph_gx.removeSeries(seriesx1_giro);
+            graph_gy.removeSeries(seriesy1_giro);
+            graph_gz.removeSeries(seriesz1_giro);
+        }
+        if (preferences.getBoolean("sensor2g", true)){
+            if (!graph_gx.getSeries().contains(seriesx2_giro)) {
+                graph_gx.addSeries(seriesx2_giro);
+                graph_gy.addSeries(seriesy2_giro);
+                graph_gz.addSeries(seriesz2_giro);
+            }
+        } else {
+            graph_gx.removeSeries(seriesx2_giro);
+            graph_gy.removeSeries(seriesy2_giro);
+            graph_gz.removeSeries(seriesz2_giro);
+        }
+        if (preferences.getBoolean("sensor3g", true)){
+            if (!graph_gx.getSeries().contains(seriesx3_giro)) {
+                graph_gx.addSeries(seriesx3_giro);
+                graph_gy.addSeries(seriesy3_giro);
+                graph_gz.addSeries(seriesz3_giro);
+            }
+        } else {
+            graph_gx.removeSeries(seriesx3_giro);
+            graph_gy.removeSeries(seriesy3_giro);
+            graph_gz.removeSeries(seriesz3_giro);
+        }
+        if (preferences.getBoolean("sensor4g", true)){
+            if (!graph_gx.getSeries().contains(seriesx4_giro)) {
+                graph_gx.addSeries(seriesx4_giro);
+                graph_gy.addSeries(seriesy4_giro);
+                graph_gz.addSeries(seriesz4_giro);
+            }
+        } else {
+            graph_gx.removeSeries(seriesx4_giro);
+            graph_gy.removeSeries(seriesy4_giro);
+            graph_gz.removeSeries(seriesz4_giro);
+        }
+        if (preferences.getBoolean("sensor5g", true)){
+            if (!graph_gx.getSeries().contains(seriesx5_giro)) {
+                graph_gx.addSeries(seriesx5_giro);
+                graph_gy.addSeries(seriesy5_giro);
+                graph_gz.addSeries(seriesz5_giro);
+            }
+        } else {
+            graph_gx.removeSeries(seriesx5_giro);
+            graph_gy.removeSeries(seriesy5_giro);
+            graph_gz.removeSeries(seriesz5_giro);
+        }
+        if(preferences.getBoolean("sensor6g", true)){
+            if (!graph_gx.getSeries().contains(seriesx6_giro)) {
+                graph_gx.addSeries(seriesx6_giro);
+                graph_gy.addSeries(seriesy6_giro);
+                graph_gz.addSeries(seriesz6_giro);
+            }
+        } else {
+            graph_gx.removeSeries(seriesx6_giro);
+            graph_gy.removeSeries(seriesy6_giro);
+            graph_gz.removeSeries(seriesz6_giro);
+        }
+        if (preferences.getBoolean("sensor1a", true)){
+            if (!graph_ax.getSeries().contains(seriesx1_acc)) {
+                graph_ax.addSeries(seriesx1_acc);
+                graph_ay.addSeries(seriesy1_acc);
+                graph_az.addSeries(seriesz1_acc);
+            }
+        } else {
+            graph_ax.removeSeries(seriesx1_acc);
+            graph_ay.removeSeries(seriesy1_acc);
+            graph_az.removeSeries(seriesz1_acc);
+        }
+        if (preferences.getBoolean("sensor2a", true)){
+            if (!graph_ax.getSeries().contains(seriesx2_acc)) {
+                graph_ax.addSeries(seriesx2_acc);
+                graph_ay.addSeries(seriesy2_acc);
+                graph_az.addSeries(seriesz2_acc);
+            }
+        } else {
+            graph_ax.removeSeries(seriesx2_acc);
+            graph_ay.removeSeries(seriesy2_acc);
+            graph_az.removeSeries(seriesz2_acc);
+        }
+        if (preferences.getBoolean("sensor3a", true)){
+            if (!graph_ax.getSeries().contains(seriesx3_acc)) {
+                graph_ax.addSeries(seriesx3_acc);
+                graph_ay.addSeries(seriesy3_acc);
+                graph_az.addSeries(seriesz3_acc);
+            }
+        } else {
+            graph_ax.removeSeries(seriesx3_acc);
+            graph_ay.removeSeries(seriesy3_acc);
+            graph_az.removeSeries(seriesz3_acc);
+        }
+        if (preferences.getBoolean("sensor4a", true)){
+            if (!graph_ax.getSeries().contains(seriesx4_acc)) {
+                graph_ax.addSeries(seriesx4_acc);
+                graph_ay.addSeries(seriesy4_acc);
+                graph_az.addSeries(seriesz4_acc);
+            }
+        } else {
+            graph_ax.removeSeries(seriesx4_acc);
+            graph_ay.removeSeries(seriesy4_acc);
+            graph_az.removeSeries(seriesz4_acc);
+        }
+        if (preferences.getBoolean("sensor5a", true)){
+            if (!graph_ax.getSeries().contains(seriesx5_acc)) {
+                graph_ax.addSeries(seriesx5_acc);
+                graph_ay.addSeries(seriesy5_acc);
+                graph_az.addSeries(seriesz5_acc);
+            }
+        } else {
+            graph_ax.removeSeries(seriesx5_acc);
+            graph_ay.removeSeries(seriesy5_acc);
+            graph_az.removeSeries(seriesz5_acc);
+        }
+        if(preferences.getBoolean("sensor6a", true)){
+            if (!graph_ax.getSeries().contains(seriesx6_acc)) {
+                graph_ax.addSeries(seriesx6_acc);
+                graph_ay.addSeries(seriesy6_acc);
+                graph_az.addSeries(seriesz6_acc);
+            }
+        } else {
+            graph_ax.removeSeries(seriesx6_acc);
+            graph_ay.removeSeries(seriesy6_acc);
+            graph_az.removeSeries(seriesz6_acc);
+        }
+
         Log.d("lockPredict", "unlocked");
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-///TODO: removed svc
         Log.d("lockPredict", "locked");
     }
 
     @Override
+    public void onDestroy(){
+        super.onDestroy();
+        BluetoothConnection.getInstance(this).removeMe(this);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        bluetoothConnection.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode,resultCode,data);
+        //bluetoothConnection.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
-    public void getReadyToSpeak() {
-
-    }
-
-    @Override
-    public void speak() {
-        speak(predictedText.getText().toString());
-    }
-
-    @Override
-    public void appendCharaterToScreen(final char character) {
-        runOnUiThread(new Runnable() {
+    public Runnable getPostAppendRunnable() {
+        return new Runnable() {
             @Override
             public void run() {
+                try {
+                    seriesx1_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor1().getGx().getRealSize(), GloveSensors.getInstance().getSensor1().getGx().lastElement()), true, max_x_points);
+                    seriesy1_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor1().getGy().getRealSize(), GloveSensors.getInstance().getSensor1().getGy().lastElement()), true, max_x_points);
+                    seriesz1_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor1().getGz().getRealSize(), GloveSensors.getInstance().getSensor1().getGz().lastElement()), true, max_x_points);
 
-                predictedText.setText(predictedText.getText() + "" + character);
+                    seriesx2_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor2().getGx().getRealSize(), GloveSensors.getInstance().getSensor2().getGx().lastElement()), true, max_x_points);
+                    seriesy2_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor2().getGy().getRealSize(), GloveSensors.getInstance().getSensor2().getGy().lastElement()), true, max_x_points);
+                    seriesz2_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor2().getGz().getRealSize(), GloveSensors.getInstance().getSensor2().getGz().lastElement()), true, max_x_points);
+
+                    seriesx3_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor3().getGx().getRealSize(), GloveSensors.getInstance().getSensor3().getGx().lastElement()), true, max_x_points);
+                    seriesy3_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor3().getGy().getRealSize(), GloveSensors.getInstance().getSensor3().getGy().lastElement()), true, max_x_points);
+                    seriesz3_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor3().getGz().getRealSize(), GloveSensors.getInstance().getSensor3().getGz().lastElement()), true, max_x_points);
+
+                    seriesx4_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor4().getGx().getRealSize(), GloveSensors.getInstance().getSensor4().getGx().lastElement()), true, max_x_points);
+                    seriesy4_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor4().getGy().getRealSize(), GloveSensors.getInstance().getSensor4().getGy().lastElement()), true, max_x_points);
+                    seriesz4_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor4().getGz().getRealSize(), GloveSensors.getInstance().getSensor4().getGz().lastElement()), true, max_x_points);
+
+                    seriesx5_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor5().getGx().getRealSize(), GloveSensors.getInstance().getSensor5().getGx().lastElement()), true, max_x_points);
+                    seriesy5_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor5().getGy().getRealSize(), GloveSensors.getInstance().getSensor5().getGy().lastElement()), true, max_x_points);
+                    seriesz5_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor5().getGz().getRealSize(), GloveSensors.getInstance().getSensor5().getGz().lastElement()), true, max_x_points);
+
+                    seriesx6_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor6().getGx().getRealSize(), GloveSensors.getInstance().getSensor6().getGx().lastElement()), true, max_x_points);
+                    seriesy6_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor6().getGy().getRealSize(), GloveSensors.getInstance().getSensor6().getGy().lastElement()), true, max_x_points);
+                    seriesz6_giro.appendData(new DataPoint(GloveSensors.getInstance().getSensor6().getGz().getRealSize(), GloveSensors.getInstance().getSensor6().getGz().lastElement()), true, max_x_points);
+
+                    seriesx1_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor1().getAx().getRealSize(), GloveSensors.getInstance().getSensor1().getAx().lastElement()), true, max_x_points);
+                    seriesy1_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor1().getAy().getRealSize(), GloveSensors.getInstance().getSensor1().getAy().lastElement()), true, max_x_points);
+                    seriesz1_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor1().getAz().getRealSize(), GloveSensors.getInstance().getSensor1().getAz().lastElement()), true, max_x_points);
+
+                    seriesx2_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor2().getAx().getRealSize(), GloveSensors.getInstance().getSensor2().getAx().lastElement()), true, max_x_points);
+                    seriesy2_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor2().getAy().getRealSize(), GloveSensors.getInstance().getSensor2().getAy().lastElement()), true, max_x_points);
+                    seriesz2_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor2().getAz().getRealSize(), GloveSensors.getInstance().getSensor2().getAz().lastElement()), true, max_x_points);
+
+                    seriesx3_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor3().getAx().getRealSize(), GloveSensors.getInstance().getSensor3().getAx().lastElement()), true, max_x_points);
+                    seriesy3_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor3().getAy().getRealSize(), GloveSensors.getInstance().getSensor3().getAy().lastElement()), true, max_x_points);
+                    seriesz3_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor3().getAz().getRealSize(), GloveSensors.getInstance().getSensor3().getAz().lastElement()), true, max_x_points);
+
+                    seriesx4_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor4().getAx().getRealSize(), GloveSensors.getInstance().getSensor4().getAx().lastElement()), true, max_x_points);
+                    seriesy4_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor4().getAy().getRealSize(), GloveSensors.getInstance().getSensor4().getAy().lastElement()), true, max_x_points);
+                    seriesz4_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor4().getAz().getRealSize(), GloveSensors.getInstance().getSensor4().getAz().lastElement()), true, max_x_points);
+
+                    seriesx5_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor5().getAx().getRealSize(), GloveSensors.getInstance().getSensor5().getAx().lastElement()), true, max_x_points);
+                    seriesy5_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor5().getAy().getRealSize(), GloveSensors.getInstance().getSensor5().getAy().lastElement()), true, max_x_points);
+                    seriesz5_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor5().getAz().getRealSize(), GloveSensors.getInstance().getSensor5().getAz().lastElement()), true, max_x_points);
+
+                    seriesx6_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor6().getAx().getRealSize(), GloveSensors.getInstance().getSensor6().getAx().lastElement()), true, max_x_points);
+                    seriesy6_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor6().getAy().getRealSize(), GloveSensors.getInstance().getSensor6().getAy().lastElement()), true, max_x_points);
+                    seriesz6_acc.appendData(new DataPoint(GloveSensors.getInstance().getSensor6().getAz().getRealSize(), GloveSensors.getInstance().getSensor6().getAz().lastElement()), true, max_x_points);
+
+                } catch (ConcurrentModificationException e) {
+                    System.out.println("erro onde tu acha q ta dando: " + e.getMessage());
+                }
             }
-        });
+        };
+    }
+
+    //Setup dos graficos dos Giroscopios
+    public void setupGGraph(){
+        //graficos giroscopio
+        //cores
+        seriesx1_giro.setColor(Color.GREEN);
+        seriesy1_giro.setColor(Color.GREEN);
+        seriesz1_giro.setColor(Color.GREEN);
+        seriesx2_giro.setColor(Color.RED);
+        seriesy2_giro.setColor(Color.RED);
+        seriesz2_giro.setColor(Color.RED);
+        seriesx3_giro.setColor(Color.BLUE);
+        seriesy3_giro.setColor(Color.BLUE);
+        seriesz3_giro.setColor(Color.BLUE);
+        seriesx4_giro.setColor(Color.YELLOW);
+        seriesy4_giro.setColor(Color.YELLOW);
+        seriesz4_giro.setColor(Color.YELLOW);
+        seriesx5_giro.setColor(Color.MAGENTA);
+        seriesy5_giro.setColor(Color.MAGENTA);
+        seriesz5_giro.setColor(Color.MAGENTA);
+        seriesx6_giro.setColor(Color.GRAY);
+        seriesy6_giro.setColor(Color.GRAY);
+        seriesz6_giro.setColor(Color.GRAY);
+
+        //Adiçao das linhas
+
+        graph_gx.setTitle("Gyroscopes axis X");
+        graph_gx.addSeries(seriesx1_giro);
+        graph_gx.addSeries(seriesx2_giro);
+        graph_gx.addSeries(seriesx3_giro);
+        graph_gx.addSeries(seriesx4_giro);
+        graph_gx.addSeries(seriesx5_giro);
+        graph_gx.addSeries(seriesx6_giro);
+
+        graph_gy.setTitle("Gyroscopes axis Y");
+        graph_gy.addSeries(seriesy1_giro);
+        graph_gy.addSeries(seriesy2_giro);
+        graph_gy.addSeries(seriesy3_giro);
+        graph_gy.addSeries(seriesy4_giro);
+        graph_gy.addSeries(seriesy5_giro);
+        graph_gy.addSeries(seriesy6_giro);
+
+        graph_gz.setTitle("Gyroscopes axis Z");
+        graph_gz.addSeries(seriesz1_giro);
+        graph_gz.addSeries(seriesz2_giro);
+        graph_gz.addSeries(seriesz3_giro);
+        graph_gz.addSeries(seriesz4_giro);
+        graph_gz.addSeries(seriesz5_giro);
+        graph_gz.addSeries(seriesz6_giro);
+
+        //Definiçao do viewport
+        graph_gx.getViewport().setXAxisBoundsManual(true);
+        graph_gx.getViewport().setYAxisBoundsManual(true);
+        graph_gx.getViewport().setMinX(0);
+        graph_gx.getViewport().setMaxX(max_x_points);
+
+        graph_gy.getViewport().setXAxisBoundsManual(true);
+        graph_gy.getViewport().setYAxisBoundsManual(true);
+        graph_gy.getViewport().setMinX(0);
+        graph_gy.getViewport().setMaxX(max_x_points);
+
+        graph_gz.getViewport().setXAxisBoundsManual(true);
+        graph_gz.getViewport().setYAxisBoundsManual(true);
+        graph_gz.getViewport().setMinX(0);
+        graph_gz.getViewport().setMaxX(max_x_points);
+    }
+
+    //Setup dos graficos dos Acelerometros
+    public void setupAGraph(){
+
+        //graficos acelerometros
+
+        //Cores
+        seriesx1_acc.setColor(Color.GREEN);
+        seriesy1_acc.setColor(Color.GREEN);
+        seriesz1_acc.setColor(Color.GREEN);
+        seriesx2_acc.setColor(Color.RED);
+        seriesy2_acc.setColor(Color.RED);
+        seriesz2_acc.setColor(Color.RED);
+        seriesx3_acc.setColor(Color.BLUE);
+        seriesy3_acc.setColor(Color.BLUE);
+        seriesz3_acc.setColor(Color.BLUE);
+        seriesx4_acc.setColor(Color.YELLOW);
+        seriesy4_acc.setColor(Color.YELLOW);
+        seriesz4_acc.setColor(Color.YELLOW);
+        seriesx5_acc.setColor(Color.MAGENTA);
+        seriesy5_acc.setColor(Color.MAGENTA);
+        seriesz5_acc.setColor(Color.MAGENTA);
+        seriesx6_acc.setColor(Color.GRAY);
+        seriesy6_acc.setColor(Color.GRAY);
+        seriesz6_acc.setColor(Color.GRAY);
+
+        //Adiçao das linhas
+        graph_ax.setTitle("Accelerometers axis X");
+        graph_ax.addSeries(seriesx1_acc);
+        graph_ax.addSeries(seriesx2_acc);
+        graph_ax.addSeries(seriesx3_acc);
+        graph_ax.addSeries(seriesx4_acc);
+        graph_ax.addSeries(seriesx5_acc);
+        graph_ax.addSeries(seriesx5_acc);
+
+        graph_ay.setTitle("Accelerometers axis Y");
+        graph_ay.addSeries(seriesy1_acc);
+        graph_ay.addSeries(seriesy2_acc);
+        graph_ay.addSeries(seriesy3_acc);
+        graph_ay.addSeries(seriesy4_acc);
+        graph_ay.addSeries(seriesy5_acc);
+        graph_ay.addSeries(seriesy6_acc);
+
+        graph_az.setTitle("Accelerometers axis Z");
+        graph_az.addSeries(seriesz1_acc);
+        graph_az.addSeries(seriesz2_acc);
+        graph_az.addSeries(seriesz3_acc);
+        graph_az.addSeries(seriesz4_acc);
+        graph_az.addSeries(seriesz5_acc);
+        graph_az.addSeries(seriesz6_acc);
+
+        //Definiçao da viewport
+        graph_ax.getViewport().setXAxisBoundsManual(true);
+        graph_ax.getViewport().setYAxisBoundsManual(true);
+        graph_ax.getViewport().setMinX(0);
+        graph_ax.getViewport().setMaxX(max_x_points);
+
+        graph_ay.getViewport().setXAxisBoundsManual(true);
+        graph_ay.getViewport().setYAxisBoundsManual(true);
+        graph_ay.getViewport().setMinX(0);
+        graph_ay.getViewport().setMaxX(max_x_points);
+
+        graph_az.getViewport().setXAxisBoundsManual(true);
+        graph_az.getViewport().setYAxisBoundsManual(true);
+        graph_az.getViewport().setMinX(0);
+        graph_az.getViewport().setMaxX(max_x_points);
 
     }
 
-    @Override
-    public void closeTheSpeaker() {
-
-    }
 }
-

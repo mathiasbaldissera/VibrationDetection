@@ -1,4 +1,4 @@
-package com.gama.alessandrogirardi.comunicacao_bluetooth_luva.uncoupledprograms;
+package org.gama.applications.vibrationdetectorapp.uncoupledprograms;
 
 import android.content.Context;
 import android.os.Environment;
