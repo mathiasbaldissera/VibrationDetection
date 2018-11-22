@@ -188,7 +188,10 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
         closeButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
+                    if(bluetoothConnection.isConnected())
                     bluetoothConnection.disconnect();
+                    else
+                        Toast.makeText(MainActivity.this, "Not Connected", Toast.LENGTH_SHORT).show();
                 } catch (IOException ex) {
                     Log.d("closeButtonEX", ex.getMessage());
 

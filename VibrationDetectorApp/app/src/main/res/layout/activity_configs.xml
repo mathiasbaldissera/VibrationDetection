@@ -9,37 +9,6 @@
     tools:context=".ConfigsActivity">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:lineSpacingExtra="18sp"
-        android:text="Locale:"
-        android:textColor="@android:color/black"
-        android:textSize="18sp" />
-
-    <RadioGroup
-        android:id="@+id/configs_rg"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:checkedButton="@+id/radioButton">
-
-        <RadioButton
-            android:id="@+id/config_rb_ptBR"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="ptBR" />
-
-        <RadioButton
-            android:id="@+id/config_rb_US"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="US" />
-
-    </RadioGroup>
-
-    <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,4 +38,32 @@
             android:layout_weight="1"
             android:text="LuvaGestos" />
     </RadioGroup>
+
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Escala dos graficos"
+        android:textAppearance="@style/TextAppearance.AppCompat.Notification.Title" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tempo a cada salvamento"
+        android:textAppearance="@style/TextAppearance.AppCompat.Notification.Title" />
+
+    <SeekBar
+        android:id="@+id/seekBar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="50" />
+
+
 </LinearLayout>

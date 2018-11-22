@@ -20,15 +20,6 @@ public class ConfigsActivity extends AppCompatActivity {
         }
 
 
-        RadioGroup rg = findViewById(R.id.configs_rg);
-        rg.check(new PreferencesUtils(this).getSavedLocaleCheckboxID());
-
-        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                new PreferencesUtils(ConfigsActivity.this).saveLocaleCheckboxID(i);
-            }
-        });
 
         RadioGroup rg2 = findViewById(R.id.configs_rg2);
         rg2.check(new PreferencesUtils(this).getSavedGloveId());
