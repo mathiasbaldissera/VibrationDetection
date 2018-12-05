@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeLayout"
@@ -7,113 +7,108 @@
     android:layout_height="fill_parent"
     android:layout_alignParentBottom="true"
     android:layout_margin="5dp"
+    android:background="@color/switch_selected_text_color"
     android:orientation="vertical"
     tools:ignore="TextFields,HardcodedText">
 
+    <ToggleButton
+        android:id="@+id/fast_options_toggle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp"
+        android:layout_weight="1"
+        android:textOff="Show Quick Options"
+        android:textOn="Hide Quick Options"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/config_btn"
+        app:layout_constraintStart_toEndOf="@+id/connect_toggle" />
+
+    <Button
+
+        android:id="@+id/config_btn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:minWidth="100dp"
+        android:text="Configure"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ToggleButton
-        android:id="@+id/btn_switch"
-        android:layout_width="match_parent"
+
+        android:id="@+id/connect_toggle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="ToggleButton"
-        android:textOff="Gyroscope"
-        android:textOn="Accelerometer" />
+        android:layout_weight="3"
+        android:minWidth="100dp"
+        android:text="Connect"
+        android:textOff="Connect"
+        android:textOn="Disconnet"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_main"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/fast_options_toggle"
+        app:layout_constraintEnd_toStartOf="@+id/config_btn"
+        app:layout_constraintStart_toEndOf="@+id/connect_toggle"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/graph_list_a"
-        android:layout_width="wrap_content"
+        android:id="@+id/fast_options_container"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_weight="50"
-        android:layout_marginHorizontal="5dp"
+        android:background="@drawable/circle_background"
         android:orientation="vertical"
-        android:visibility="gone">
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphx_acc"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphy_acc"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphz_acc"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/graph_list_g"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="50"
-        android:layout_marginHorizontal="5dp"
-        android:orientation="vertical"
-        android:visibility="visible"
-        app:layout_constraintTop_toBottomOf="@+id/btn_switch"
-        tools:layout_editor_absoluteX="109dp">
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphx_giro"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:baselineAligned="false" />
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphy_giro"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphz_giro"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/bottom_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/fast_options_toggle"
+        app:layout_constraintEnd_toEndOf="@+id/fast_options_toggle"
+        app:layout_constraintStart_toStartOf="@+id/fast_options_toggle">
 
         <ToggleButton
-
-            android:id="@+id/btn_connect"
-            android:layout_width="wrap_content"
+            android:id="@+id/stop_chart_saving_toggle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Connect"
-            android:textOff="Connect"
-            android:textOn="Disconnet"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:text="ToggleButton"
+            android:textOff="STOP CHART AND SAVING"
+            android:textOn="RESUME CHART AND SAVING" />
+
+        <ToggleButton
+            android:id="@+id/stop_chart_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOff="STOP CHARTS"
+            android:textOn="RESUME CHARTS"
+            android:visibility="visible" />
+
+        <ToggleButton
+            android:id="@+id/stop_saving_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textOff="STOP SAVING"
+            android:textOn="RESUME SAVING"
+            android:visibility="visible" />
 
         <Button
-
-            android:id="@+id/btn_config"
-            android:layout_width="wrap_content"
+            android:id="@+id/swap_archive_btn"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Configure"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:layout_editor_absoluteX="209dp" />
+            android:text="SWAP ARCHIVE" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/switch_selected_text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/config_btn"
+        app:layout_constraintStart_toStartOf="@+id/connect_toggle"
+        app:layout_constraintTop_toTopOf="@+id/fast_options_toggle" />
 
-</LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

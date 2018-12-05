@@ -3,17 +3,16 @@ package org.gama.applications.vibrationdetectorapp.uncoupledprograms;
 import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
+
+import org.gama.applications.vibrationdetectorapp.PreferencesUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-
-import static android.content.Context.MODE_APPEND;
+import java.util.concurrent.TimeUnit;
 
 
 public class DataSaveCsv<E> {
@@ -21,145 +20,174 @@ public class DataSaveCsv<E> {
     //os que começam com auto são para fazer uma rotina de salvar arquivos.
     //os que começarm mannually é pq eles salvam um ponto quando o usuário clicar em save
 
-    private ArrayList<ArrayList<E>> autoAppendGyro = new ArrayList<ArrayList<E>>();
-    private ArrayList<ArrayList<E>> manuallyAppendGyro = new ArrayList<ArrayList<E>>();
-    private ArrayList<ArrayList<E>> autoAppendAcc = new ArrayList<ArrayList<E>>();
-    private ArrayList<ArrayList<E>> manuallyAppendAcc = new ArrayList<ArrayList<E>>();
-    private String gyroAutoSaveFile;
-    private String accAutoSaveFile;
+    private ArrayList<ArrayList<E>> autoAppendGyroList = new ArrayList<ArrayList<E>>();
+    private ArrayList<ArrayList<E>> manuallyAppendGyroList = new ArrayList<ArrayList<E>>();
+    private ArrayList<ArrayList<E>> autoAppendAccList = new ArrayList<ArrayList<E>>();
+    private ArrayList<ArrayList<E>> manuallyAppendAccList = new ArrayList<ArrayList<E>>();
+    private String gyroAutoSaveFileName;
+    private String accAutoSaveFileName;
     private int sizeLimit;
     private boolean isAutoSavingGyro = false;
     private boolean isAutoSavingAcc = false;
+    private static DataSaveCsv ME;
+    private static long lastSaveMilliseconds;
+    private int saveInterval;
 
-    public DataSaveCsv(int sizeLimit) {
+    public static DataSaveCsv getInstance(Context context) {
+        if (ME == null)
+            ME = new DataSaveCsv(40);
+        ME.saveInterval=new PreferencesUtils(context).getTimeIntervalValue();
+        return ME;
+    }
+
+    private DataSaveCsv(int sizeLimit) {
         this.sizeLimit = sizeLimit;
 
     }
 
-    private String getSaveHour(boolean acelerometro) {
-
-        //pega a hora atual para salvar o arquivo
-        String currentDate = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()).replace("/", "_").replace(" ", "_").replace(":", "_");
-        if (acelerometro) {
-            currentDate += "acc";
-        } else {
-            currentDate += "gyro";
-        }
-        return currentDate + ".csv";
+    /**
+     * make a file name to save accelerometer data, using current time plus "acc.csv"
+     * @return the archive name
+     */
+    private String getAccAutoSaveFileName() {
+        String fileName = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()).replace("/", "_").replace(" ", "_").replace(":", "_");
+        fileName += "acc.csv";
+        return fileName;
     }
 
-    public boolean getIsAutoSavingGyro() {
 
-        return this.isAutoSavingGyro;
+    /**
+     * make a file name to save gyroscope data, using current time plus "gyro.csv"
+     * @return the archive name
+     */
+    private String getGyroAutoSaveFileName() {
+        String fileName = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()).replace("/", "_").replace(" ", "_").replace(":", "_");
+        fileName += "gyro.csv";
+        return fileName;
     }
 
-    public void swapAutoSavingGyro(Context context) {
-        //se ele está auto salvando ele para salvar (ATENÇÃO: TROCAR ISSO POR UM set VAI DAR MERDA)
-
+    /**
+     * turn on the auto saving gyroscope data feature
+     */
+    public void turnOnAutoSavingGyro() {
         if (!this.isAutoSavingGyro) {
-            this.gyroAutoSaveFile = getSaveHour(false);
-        } else {
-            this.appendCsv(this.autoAppendGyro, this.gyroAutoSaveFile, context);
-            this.autoAppendGyro = new ArrayList<ArrayList<E>>();
+            this.gyroAutoSaveFileName = getGyroAutoSaveFileName();
+            this.isAutoSavingAcc = true;
         }
-        this.isAutoSavingGyro = !this.isAutoSavingGyro;
     }
 
+    /**
+     * turn off the auto saving gyroscope data feature, save the pendent data and reset the list
+     */
+    public void turnOffAutoSavingGyro() {
+        if (this.isAutoSavingGyro) {
+            this.appendToCsv(this.autoAppendGyroList, this.gyroAutoSaveFileName);
+            this.autoAppendGyroList = new ArrayList<ArrayList<E>>();
+            this.isAutoSavingAcc = false;
+        }
 
-    public boolean getIsAutoSavingAcc() {
-        return this.isAutoSavingAcc;
     }
 
-    public void swapAutoSavingAcc(Context context) {
-        //se ele está auto salvando ele para salvar (ATENÇÃO: TROCAR ISSO POR UM set VAI DAR MERDA)
+    /**
+     * make the autosave function save on new files, changing the files name.
+     */
+    public String saveToNewFile(){
+        this.gyroAutoSaveFileName = getGyroAutoSaveFileName();
+        this.accAutoSaveFileName = getAccAutoSaveFileName();
+        return gyroAutoSaveFileName.replace("gyro.csv","");
+    }
+
+    /**
+     * turn on the auto saving accelerometer data feature
+     */
+    public void turnOnAutoSavingAcc() {
         if (!this.isAutoSavingAcc) {
-            this.accAutoSaveFile = getSaveHour(true);
-        } else {
-            this.appendCsv(this.autoAppendAcc, this.accAutoSaveFile, context);
-            this.autoAppendAcc = new ArrayList<ArrayList<E>>();
+            this.accAutoSaveFileName = getAccAutoSaveFileName();
+            this.isAutoSavingAcc = true;
         }
+    }
 
-        this.isAutoSavingAcc = !this.isAutoSavingAcc;
+    /**
+     * turn off the auto saving accelerometer data feature and save the pendent data
+     */
+    public void turnOffAutoSavingAcc() {
+        if (this.isAutoSavingAcc) {
+            this.appendToCsv(this.autoAppendAccList, this.accAutoSaveFileName);
+            this.autoAppendAccList = new ArrayList<ArrayList<E>>();
+            this.isAutoSavingAcc = false;
+        }
     }
 
 
-    public void appendJustLineGyro(ArrayList<E> valuesToSave) {
-
-        this.manuallyAppendGyro.add(valuesToSave);
-
-    }
-
-    public void appendModeGyro(ArrayList<E> valuesToSave, Context context) {
+    public void appendGyroData(ArrayList<E> valuesToSave) {
         //so adiciona ao array e quando chega a um limite ele paras
-        this.autoAppendGyro.add(valuesToSave);
+        this.autoAppendGyroList.add(valuesToSave);
+        if (this.sizeLimit >= this.autoAppendGyroList.size()) {
+            this.appendToCsv(this.autoAppendGyroList, this.gyroAutoSaveFileName);
+            this.autoAppendGyroList = new ArrayList<ArrayList<E>>();
+        }
+    }
 
-        if (this.sizeLimit >= this.autoAppendGyro.size()) {
-
-            this.appendCsv(this.autoAppendGyro, this.gyroAutoSaveFile, context);
-            this.autoAppendGyro = new ArrayList<ArrayList<E>>();
-
+    public void appendAccData(ArrayList<E> valuesToSave) {
+        this.autoAppendAccList.add(valuesToSave);
+        if (this.sizeLimit >= this.autoAppendAccList.size()) {
+            this.appendToCsv(this.autoAppendAccList, this.accAutoSaveFileName);
+            this.autoAppendAccList = new ArrayList<ArrayList<E>>();
         }
     }
 
 
-    public void appendJustLineAcc(ArrayList<E> valuesToSave) {
-        this.manuallyAppendAcc.add(valuesToSave);
-    }
-
-    public void appendModeAcc(ArrayList<E> valuesToSave, Context context) {
-        this.autoAppendAcc.add(valuesToSave);
-
-
-        if (this.sizeLimit >= this.autoAppendAcc.size()) {
-
-            this.appendCsv(this.autoAppendAcc, this.accAutoSaveFile, context);
-            this.autoAppendAcc = new ArrayList<ArrayList<E>>();
-
-        }
-
-    }
-
-
-    public void appendCsv(final ArrayList<ArrayList<E>> arr, final String fileName, Context context) {
-
+    public void appendToCsv(final ArrayList<ArrayList<E>> arr, final String fileName) {
         new Runnable() {
             @Override
             public void run() {
-
-        File sdCard = Environment.getExternalStorageDirectory();
-        File dir = new File(sdCard.getAbsolutePath() + "/GLOVEAPP/");
-
-        //salva em um csv
-        String s = "";
-        for (ArrayList<E> linha : arr) {
-            s += TextUtils.join(",", linha);
-            s += "\n";
-        }
-
-        long initialTime=System.currentTimeMillis();
-
-        Log.d("salvando", "inico");
-        File file = new File(dir, fileName);
-        try {
-            dir.mkdirs();
-            if (!file.exists()) {
-            }
-            BufferedWriter output = new BufferedWriter(new FileWriter(file.getAbsolutePath(), true));
-            output.append(s);
-            output.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Log.d("salvando", "fim");
-        long finalTime=System.currentTimeMillis();
-
-        Log.d("elapsed time", ""+(finalTime-initialTime));
-
+                long currentTime=System.currentTimeMillis();
+                if(TimeUnit.MILLISECONDS.toMinutes(lastSaveMilliseconds-currentTime)>=saveInterval){
+                    saveToNewFile();
+                    lastSaveMilliseconds=currentTime;
+                }
+                File sdCard = Environment.getExternalStorageDirectory();
+                File dir = new File(sdCard.getAbsolutePath() + "/VibrationDetectionExportedFiles/");
+                String s = "";
+                for (ArrayList<E> linha : arr) {
+                    s += TextUtils.join(",", linha);
+                    s += "\n";
+                }
+                File file = new File(dir, fileName);
+                try {
+                    dir.mkdirs();
+                    BufferedWriter output = new BufferedWriter(new FileWriter(file.getAbsolutePath(), true));
+                    output.append(s);
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }.run();
 
     }
 
-    //public void save(boolean manuallyChoose){}
+    public void appendJustLineGyro(ArrayList<E> valuesToSave) {
+        this.manuallyAppendGyroList.add(valuesToSave);
+    }
+
+    public void appendJustLineAcc(ArrayList<E> valuesToSave) {
+        this.manuallyAppendAccList.add(valuesToSave);
+    }
+
+    public boolean isAutoSavingAcc() {
+        return this.isAutoSavingAcc;
+    }
+
+    public boolean isAutoSavingGyro() {
+        return this.isAutoSavingGyro;
+    }
+    public int getSaveInterval() {
+        return saveInterval;
+    }
+
+    public void setSaveInterval(int saveInterval) {
+        this.saveInterval = saveInterval;
+    }
 
 }

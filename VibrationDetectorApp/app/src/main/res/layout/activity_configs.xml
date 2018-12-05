@@ -10,17 +10,17 @@
 
     <TextView
         android:id="@+id/text_view_giro2"
-        android:layout_marginTop="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:text="@string/gyroscope_text"
         android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -130,6 +130,13 @@
 
     </LinearLayout>
 
+    <CheckBox
+        android:id="@+id/save_gyro_data_cbx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="Save Gyroscope Data" />
+
     <TextView
         android:id="@+id/text_view_acc"
         android:layout_width="match_parent"
@@ -141,8 +148,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -227,12 +234,12 @@
                 android:orientation="horizontal">
 
                 <CheckBox
-                    android:id="@+id/sensor5a"
+                    android:id="@+id/sensor6a"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:checked="true"
-                    android:text="@string/sensor_5_atext" />
+                    android:text="@string/sensor_6_atext" />
             </LinearLayout>
 
             <LinearLayout
@@ -242,38 +249,49 @@
                 android:orientation="horizontal">
 
                 <CheckBox
-                    android:id="@+id/sensor6a"
+                    android:id="@+id/sensor5a"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:checked="true"
-                    android:text="@string/sensor_6_atext" />
+                    android:text="@string/sensor_5_atext" />
             </LinearLayout>
 
         </LinearLayout>
 
+
     </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/save_acc_data_cbx"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="Save Accelerometer Data" />
 
     <TextView
         android:id="@+id/graph_text"
         android:layout_width="match_parent"
-        android:layout_marginTop="5dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:text="@string/graph_view_scale"
         android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
-    <SeekBar
+    <Spinner
         android:id="@+id/graph_scale"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:max="6" />
+        android:gravity="center"
+        android:max="6"
+        android:minWidth="150dp"
+        tools:entries="@array/scale_in_g" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/graph_start_at"
         android:layout_marginTop="5dp"
+        android:text="@string/graph_start_at"
         android:textAlignment="textStart"
         android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
@@ -306,10 +324,12 @@
         android:text="@string/save_interval"
         android:textAppearance="@style/TextAppearance.AppCompat.Button" />
 
-    <SeekBar
+    <Spinner
         android:id="@+id/time_interval"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:max="50" />
+        android:entries="@array/save_interval"
+        android:gravity="center"
+        android:minWidth="150dp" />
 
 </LinearLayout>

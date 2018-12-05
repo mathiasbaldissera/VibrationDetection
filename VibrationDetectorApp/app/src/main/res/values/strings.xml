@@ -1,6 +1,25 @@
 <resources>
     <string name="app_name">VibrationDetectorApp</string>
 
+    <string-array name="scale_in_g">
+        <item>10, -10</item>
+        <item>7.5, -7.5</item>
+        <item>5, -5</item>
+        <item>2.5, -2.5</item>
+        <item>1, -1</item>
+        <item>0.5, -0.5</item>
+        <item>0.25, -0.25</item>
+    </string-array>
+
+    <string-array name="save_interval">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>30</item>
+        <item>45</item>
+        <item>60</item>
+    </string-array>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="gyroscope_text">Gyroscope</string>

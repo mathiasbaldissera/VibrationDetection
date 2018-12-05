@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
-import android.widget.ToggleButton;
-import android.widget.Button;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -20,12 +22,12 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import org.gama.applications.vibrationdetectorapp.bluetooth.BluetoothConnection;
 import org.gama.applications.vibrationdetectorapp.bluetooth.IPostAppendScreen;
 import org.gama.applications.vibrationdetectorapp.uncoupled.GloveSensors;
-import java.util.ConcurrentModificationException;
+import org.gama.applications.vibrationdetectorapp.uncoupledprograms.DataSaveCsv;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.Math;
+import java.util.ConcurrentModificationException;
 
 
 public class MainActivity extends AppCompatActivity implements IPostAppendScreen {
@@ -92,7 +94,18 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
     private GraphView graph_ay;
     private GraphView graph_az;
 
-    private int save_interval;
+    private LinearLayout graph_acc;
+    private LinearLayout graph_giro;
+    private ToggleButton toggleAccGyro;
+    private ToggleButton connect;
+    private ToggleButton fastOptionsToggle;
+    private ToggleButton stopChartToggle;
+    private ToggleButton stopSavingToggle;
+    private ToggleButton stopChartAndSavingToggle;
+    private Button configBtn;
+    private Button swapArchiveButton;
+    private LinearLayout fast_options_container;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,13 +117,10 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             getSupportActionBar().setTitle(R.string.app_name);
         }
 
-        //Carregamento do intevalo de salvamento
-        SharedPreferences preferences = getSharedPreferences( "configurations", MODE_PRIVATE);
-        save_interval = 10 + preferences.getInt("time", 0);
-
         //Carregamento e definição dos graficos
-        final LinearLayout graph_acc = findViewById(R.id.graph_list_a);
-        final LinearLayout graph_giro = findViewById(R.id.graph_list_g);
+
+        graph_acc = findViewById(R.id.graph_list_a);
+        graph_giro = findViewById(R.id.graph_list_g);
 
         graph_gx = findViewById(R.id.graphx_giro);
         graph_gy = findViewById(R.id.graphy_giro);
@@ -119,15 +129,45 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
         graph_ax = findViewById(R.id.graphx_acc);
         graph_ay = findViewById(R.id.graphy_acc);
         graph_az = findViewById(R.id.graphz_acc);
+        stopChartAndSavingToggle = findViewById(R.id.stop_chart_saving_toggle);
 
         setupGGraph();
         setupAGraph();
 
+        toggleAccGyro = findViewById(R.id.switch_acc_gyro_toggle);
+        configBtn = findViewById(R.id.config_btn);
+        connect = findViewById(R.id.connect_toggle);
+        fastOptionsToggle = findViewById(R.id.fast_options_toggle);
+        stopChartToggle = findViewById(R.id.stop_chart_toggle);
+        stopSavingToggle = findViewById(R.id.stop_saving_toggle);
+        swapArchiveButton = findViewById(R.id.swap_archive_btn);
+        fast_options_container = findViewById(R.id.fast_options_container);
+//        fast_options_container.animate().translationY(fast_options_container.getHeight()).setDuration(0);
 
-        //Configuração de botoes
-        final ToggleButton toggle = findViewById(R.id.btn_switch);
-        toggle.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener(){
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+
+
+        PreferencesUtils prefUtils = new PreferencesUtils(this);
+        if (prefUtils.isSavingAccEnabled())
+            DataSaveCsv.getInstance(this).turnOnAutoSavingAcc();
+        else
+            DataSaveCsv.getInstance(this).turnOffAutoSavingAcc();
+
+        if (prefUtils.isSavingGyroEnabled())
+            DataSaveCsv.getInstance(this).turnOnAutoSavingGyro();
+        else
+            DataSaveCsv.getInstance(this).turnOffAutoSavingGyro();
+
+
+        listenerButtons();
+
+        BluetoothConnection.getInstance(this).putPutDataAppendRunnable(this);
+
+    }
+
+    //Configuração de botoes
+    private void listenerButtons() {
+        toggleAccGyro.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     graph_acc.setVisibility(View.VISIBLE);
                     graph_giro.setVisibility(View.GONE);
@@ -138,34 +178,31 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             }
         });
 
-
-        final Button btn_config = findViewById(R.id.btn_config);
-        btn_config.setOnClickListener(new View.OnClickListener() {
+        configBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("lockPredict", "teste");
-                openConfig(v);
+                Intent config = new Intent(MainActivity.this, ConfigsActivity.class);
+                startActivity(config);
             }
         });
 
-        final ToggleButton connect = findViewById(R.id.btn_connect);
         connect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
+                if (isChecked) {
                     if (!PermissionUtils.INSTANCE.validate(MainActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        Toast.makeText(MainActivity.this, "Please, give storage permission",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Please, give storage permission", Toast.LENGTH_SHORT).show();
                     } else {
                         try {
                             bluetoothConnection.tryToConnect(new PreferencesUtils(MainActivity.this).getSavedGlove());
                         } catch (IOException ex) {
-                            Toast.makeText(MainActivity.this, "Problem with Bluetooth Connection",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Problem with Bluetooth Connection", Toast.LENGTH_SHORT).show();
                             Log.d("tryToConnect", ex.getMessage());
                             connect.setChecked(false);
                         }
                     }
                 } else {
-                    if(bluetoothConnection.isConnected()) {
+                    if (bluetoothConnection.isConnected()) {
                         try {
                             bluetoothConnection.disconnect();
                         } catch (IOException ex) {
@@ -176,15 +213,99 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             }
         });
 
+        fastOptionsToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    fast_options_container.setVisibility(View.VISIBLE);
+                    Animation animSlide = AnimationUtils.loadAnimation(getApplicationContext(),
+                            R.anim.slide_in);
+                    fast_options_container.startAnimation(animSlide);
 
-        BluetoothConnection.getInstance(this).putPutDataAppendRunnable(this);
+                } else {
+
+                    Animation animSlide = AnimationUtils.loadAnimation(getApplicationContext(),
+                            R.anim.slide_out);
+                    animSlide.setAnimationListener(new Animation.AnimationListener() {
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animation animation) {
+                            fast_options_container.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+
+                        }
+                    });
+                    fast_options_container.startAnimation(animSlide);
+                }
+            }
+        });
+
+        stopChartToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                Log.d("stopChartToggle", "triggered");
+                if (checked) {
+                    BluetoothConnection.getInstance(MainActivity.this).removeMe(MainActivity.this);
+                } else {
+                    stopChartAndSavingToggle.setChecked(false);
+                    BluetoothConnection.getInstance(MainActivity.this).putPutDataAppendRunnable(MainActivity.this);
+
+                }
+
+            }
+        });
+        stopSavingToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                Log.d("stopSavingToggle", "triggered");
+                if (checked) {
+                    DataSaveCsv.getInstance(MainActivity.this).turnOffAutoSavingAcc();
+                    DataSaveCsv.getInstance(MainActivity.this).turnOffAutoSavingGyro();
+                } else {
+                    if (new PreferencesUtils(MainActivity.this).isSavingAccEnabled())
+                        DataSaveCsv.getInstance(MainActivity.this).turnOnAutoSavingAcc();
+
+                    if (new PreferencesUtils(MainActivity.this).isSavingGyroEnabled())
+                        DataSaveCsv.getInstance(MainActivity.this).turnOnAutoSavingGyro();
+
+                    stopChartAndSavingToggle.setChecked(false);
+                }
+            }
+        });
+
+
+        stopChartAndSavingToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                Log.d("stopChartAndSavingToggl", "triggered");
+                if (checked) {
+                    stopChartToggle.setChecked(true);
+                    stopSavingToggle.setChecked(true);
+                } else if (stopSavingToggle.isChecked() && stopChartToggle.isChecked()) {
+                    stopChartToggle.setChecked(false);
+                    stopSavingToggle.setChecked(false);
+                }
+            }
+        });
+
+
+        swapArchiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String result = DataSaveCsv.getInstance(MainActivity.this).saveToNewFile();
+                Toast.makeText(MainActivity.this, "Now archives name begins with " + result, Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 
-    public void openConfig(View view) {
-        Intent config = new Intent(this, ConfigsActivity.class);
-        startActivity(config);
-    }
 
     public static void copyStream(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
@@ -199,18 +320,27 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
         super.onResume();
 
         //Carregamento das preferencias
-        SharedPreferences preferences = getSharedPreferences( "configurations", MODE_PRIVATE);
+        PreferencesUtils prefUtils = new PreferencesUtils(this);
 
         //Carregamento do valor da escala
-        double scale = preferences.getFloat("scale", 0);
-        scale = Math.pow(10, (-3.0 + scale));
+        double scale = prefUtils.getGraphScaleValue();
         Log.d("graphScale", String.format("%f %f", -scale, scale));
 
         //Carregamento do start(começa no 0 ou no -scale)
-        boolean start = preferences.getBoolean("start", true);
-
         //Definição da Viewport
-        if(!start) {
+        graph_ax.getViewport().setYAxisBoundsManual(true);
+        graph_ay.getViewport().setYAxisBoundsManual(true);
+        graph_az.getViewport().setYAxisBoundsManual(true);
+        graph_gx.getViewport().setYAxisBoundsManual(true);
+        graph_gy.getViewport().setYAxisBoundsManual(true);
+        graph_gz.getViewport().setYAxisBoundsManual(true);
+        graph_ax.getViewport().setScalableY(true);
+        graph_ay.getViewport().setScalableY(true);
+        graph_az.getViewport().setScalableY(true);
+        graph_gx.getViewport().setScalableY(true);
+        graph_gy.getViewport().setScalableY(true);
+        graph_gz.getViewport().setScalableY(true);
+        if (prefUtils.isGraphViewScaleStaringFromZero()) {
             graph_ax.getViewport().setMinY(-scale);
             graph_ay.getViewport().setMinY(-scale);
             graph_az.getViewport().setMinY(-scale);
@@ -234,8 +364,9 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
         graph_gz.getViewport().setMaxY(scale);
 
 
+        graph_ax.refreshDrawableState();
         //Configuração das series com base nos checkbox dos sensores
-        if (preferences.getBoolean("sensor1g", true)){
+        if (prefUtils.getAnyBoolean("sensor1g", true)) {
             if (!graph_gx.getSeries().contains(seriesx1_giro)) {
                 graph_gx.addSeries(seriesx1_giro);
                 graph_gy.addSeries(seriesy1_giro);
@@ -246,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy1_giro);
             graph_gz.removeSeries(seriesz1_giro);
         }
-        if (preferences.getBoolean("sensor2g", true)){
+        if (prefUtils.getAnyBoolean("sensor2g", true)) {
             if (!graph_gx.getSeries().contains(seriesx2_giro)) {
                 graph_gx.addSeries(seriesx2_giro);
                 graph_gy.addSeries(seriesy2_giro);
@@ -257,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy2_giro);
             graph_gz.removeSeries(seriesz2_giro);
         }
-        if (preferences.getBoolean("sensor3g", true)){
+        if (prefUtils.getAnyBoolean("sensor3g", true)) {
             if (!graph_gx.getSeries().contains(seriesx3_giro)) {
                 graph_gx.addSeries(seriesx3_giro);
                 graph_gy.addSeries(seriesy3_giro);
@@ -268,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy3_giro);
             graph_gz.removeSeries(seriesz3_giro);
         }
-        if (preferences.getBoolean("sensor4g", true)){
+        if (prefUtils.getAnyBoolean("sensor4g", true)) {
             if (!graph_gx.getSeries().contains(seriesx4_giro)) {
                 graph_gx.addSeries(seriesx4_giro);
                 graph_gy.addSeries(seriesy4_giro);
@@ -279,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy4_giro);
             graph_gz.removeSeries(seriesz4_giro);
         }
-        if (preferences.getBoolean("sensor5g", true)){
+        if (prefUtils.getAnyBoolean("sensor5g", true)) {
             if (!graph_gx.getSeries().contains(seriesx5_giro)) {
                 graph_gx.addSeries(seriesx5_giro);
                 graph_gy.addSeries(seriesy5_giro);
@@ -290,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy5_giro);
             graph_gz.removeSeries(seriesz5_giro);
         }
-        if(preferences.getBoolean("sensor6g", true)){
+        if (prefUtils.getAnyBoolean("sensor6g", true)) {
             if (!graph_gx.getSeries().contains(seriesx6_giro)) {
                 graph_gx.addSeries(seriesx6_giro);
                 graph_gy.addSeries(seriesy6_giro);
@@ -301,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy6_giro);
             graph_gz.removeSeries(seriesz6_giro);
         }
-        if (preferences.getBoolean("sensor1a", true)){
+        if (prefUtils.getAnyBoolean("sensor1a", true)) {
             if (!graph_ax.getSeries().contains(seriesx1_acc)) {
                 graph_ax.addSeries(seriesx1_acc);
                 graph_ay.addSeries(seriesy1_acc);
@@ -312,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy1_acc);
             graph_az.removeSeries(seriesz1_acc);
         }
-        if (preferences.getBoolean("sensor2a", true)){
+        if (prefUtils.getAnyBoolean("sensor2a", true)) {
             if (!graph_ax.getSeries().contains(seriesx2_acc)) {
                 graph_ax.addSeries(seriesx2_acc);
                 graph_ay.addSeries(seriesy2_acc);
@@ -323,7 +454,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy2_acc);
             graph_az.removeSeries(seriesz2_acc);
         }
-        if (preferences.getBoolean("sensor3a", true)){
+        if (prefUtils.getAnyBoolean("sensor3a", true)) {
             if (!graph_ax.getSeries().contains(seriesx3_acc)) {
                 graph_ax.addSeries(seriesx3_acc);
                 graph_ay.addSeries(seriesy3_acc);
@@ -334,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy3_acc);
             graph_az.removeSeries(seriesz3_acc);
         }
-        if (preferences.getBoolean("sensor4a", true)){
+        if (prefUtils.getAnyBoolean("sensor4a", true)) {
             if (!graph_ax.getSeries().contains(seriesx4_acc)) {
                 graph_ax.addSeries(seriesx4_acc);
                 graph_ay.addSeries(seriesy4_acc);
@@ -345,7 +476,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy4_acc);
             graph_az.removeSeries(seriesz4_acc);
         }
-        if (preferences.getBoolean("sensor5a", true)){
+        if (prefUtils.getAnyBoolean("sensor5a", true)) {
             if (!graph_ax.getSeries().contains(seriesx5_acc)) {
                 graph_ax.addSeries(seriesx5_acc);
                 graph_ay.addSeries(seriesy5_acc);
@@ -356,7 +487,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy5_acc);
             graph_az.removeSeries(seriesz5_acc);
         }
-        if(preferences.getBoolean("sensor6a", true)){
+        if (prefUtils.getAnyBoolean("sensor6a", true)) {
             if (!graph_ax.getSeries().contains(seriesx6_acc)) {
                 graph_ax.addSeries(seriesx6_acc);
                 graph_ay.addSeries(seriesy6_acc);
@@ -368,8 +499,6 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_az.removeSeries(seriesz6_acc);
         }
 
-        Log.d("lockPredict", "unlocked");
-
     }
 
     @Override
@@ -379,15 +508,15 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         BluetoothConnection.getInstance(this).removeMe(this);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
-        //bluetoothConnection.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+        bluetoothConnection.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -452,7 +581,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
     }
 
     //Setup dos graficos dos Giroscopios
-    public void setupGGraph(){
+    public void setupGGraph() {
         //graficos giroscopio
         //cores
         seriesx1_giro.setColor(Color.GREEN);
@@ -518,7 +647,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
     }
 
     //Setup dos graficos dos Acelerometros
-    public void setupAGraph(){
+    public void setupAGraph() {
 
         //graficos acelerometros
 

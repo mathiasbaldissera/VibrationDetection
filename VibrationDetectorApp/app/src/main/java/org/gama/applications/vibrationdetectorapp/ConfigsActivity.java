@@ -5,12 +5,20 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.util.Log;
+
+import org.gama.applications.vibrationdetectorapp.uncoupledprograms.DataSaveCsv;
 
 
 public class ConfigsActivity extends AppCompatActivity {
@@ -26,65 +34,98 @@ public class ConfigsActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        SharedPreferences preferences = getSharedPreferences("configurations", MODE_PRIVATE);
+        final PreferencesUtils prefUtils = new PreferencesUtils(this);
 
-        ((SeekBar)findViewById(R.id.graph_scale)).setProgress((int)preferences.getFloat("scale", 3));
-        ((SeekBar)findViewById(R.id.time_interval)).setProgress(preferences.getInt("time", 0));
 
-        ((CheckBox)findViewById(R.id.sensor1g)).setChecked(preferences.getBoolean("sensor1g", true));
-        ((CheckBox)findViewById(R.id.sensor2g)).setChecked(preferences.getBoolean("sensor2g", true));
-        ((CheckBox)findViewById(R.id.sensor3g)).setChecked(preferences.getBoolean("sensor3g", true));
-        ((CheckBox)findViewById(R.id.sensor4g)).setChecked(preferences.getBoolean("sensor4g", true));
-        ((CheckBox)findViewById(R.id.sensor5g)).setChecked(preferences.getBoolean("sensor5g", true));
-        ((CheckBox)findViewById(R.id.sensor6g)).setChecked(preferences.getBoolean("sensor6g", true));
+        //todo set chart size spinner indice
+        //todo set time interval spinner indice
 
-        ((CheckBox)findViewById(R.id.sensor1a)).setChecked(preferences.getBoolean("sensor1a", true));
-        ((CheckBox)findViewById(R.id.sensor2a)).setChecked(preferences.getBoolean("sensor2a", true));
-        ((CheckBox)findViewById(R.id.sensor3a)).setChecked(preferences.getBoolean("sensor3a", true));
-        ((CheckBox)findViewById(R.id.sensor4a)).setChecked(preferences.getBoolean("sensor4a", true));
-        ((CheckBox)findViewById(R.id.sensor5a)).setChecked(preferences.getBoolean("sensor5a", true));
-        ((CheckBox)findViewById(R.id.sensor6a)).setChecked(preferences.getBoolean("sensor6a", true));
 
-        if (preferences.getBoolean("start", true)){
-            ((RadioButton)findViewById(R.id.start0)).setChecked(true);
-            ((RadioButton)findViewById(R.id.startscale)).setChecked(false);
-        } else {
-            ((RadioButton)findViewById(R.id.start0)).setChecked(false);
-            ((RadioButton)findViewById(R.id.startscale)).setChecked(true);
-        }
+        ((CheckBox) findViewById(R.id.sensor1g)).setChecked(prefUtils.getAnyBoolean("sensor1gCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor2g)).setChecked(prefUtils.getAnyBoolean("sensor2gCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor3g)).setChecked(prefUtils.getAnyBoolean("sensor3gCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor4g)).setChecked(prefUtils.getAnyBoolean("sensor4gCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor5g)).setChecked(prefUtils.getAnyBoolean("sensor5gCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor6g)).setChecked(prefUtils.getAnyBoolean("sensor6gCbxChecked", true));
 
-        final SeekBar sk = findViewById(R.id.graph_scale);
-        final TextView gtext = findViewById(R.id.graph_text);
-        gtext.setText(String.format("%s (10^%d)", "Graph View Scale", -3 + sk.getProgress()));
-        sk.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        ((CheckBox) findViewById(R.id.sensor1a)).setChecked(prefUtils.getAnyBoolean("sensor1aCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor2a)).setChecked(prefUtils.getAnyBoolean("sensor2aCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor3a)).setChecked(prefUtils.getAnyBoolean("sensor3aCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor4a)).setChecked(prefUtils.getAnyBoolean("sensor4aCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor5a)).setChecked(prefUtils.getAnyBoolean("sensor5aCbxChecked", true));
+        ((CheckBox) findViewById(R.id.sensor6a)).setChecked(prefUtils.getAnyBoolean("sensor6aCbxChecked", true));
+
+
+        CheckBox saveAccDataCbx = findViewById(R.id.save_acc_data_cbx);
+        CheckBox saveGyroDataCbx = findViewById(R.id.save_gyro_data_cbx);
+
+        saveAccDataCbx.setChecked(prefUtils.isSavingAccEnabled());
+        saveGyroDataCbx.setChecked(prefUtils.isSavingGyroEnabled());
+
+        saveAccDataCbx.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                gtext.setText(String.format("%s (10^%d)", "Graph View Scale", -3 + sk.getProgress()));
-
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                prefUtils.setIsSavingAccEnabled(b);
             }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
-        final SeekBar sk2 = findViewById(R.id.time_interval);
-        final TextView ttext = findViewById(R.id.time_text);
-        ttext.setText(String.format("%s %d s", "Save interval", 10 + sk2.getProgress()));
-        sk2.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        saveGyroDataCbx.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                ttext.setText(String.format("%s %d s", "Save interval", 10 + sk2.getProgress()));
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                prefUtils.setIsSavingGyroEnabled(b);
+            }
+        });
 
+
+        if (prefUtils.isGraphViewScaleStaringFromZero()) {
+            ((RadioGroup) findViewById(R.id.scale_selector)).check(R.id.start0);
+        } else {
+            ((RadioGroup) findViewById(R.id.scale_selector)).check(R.id.startscale);
+        }
+
+        ((RadioGroup) findViewById(R.id.scale_selector)).setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+                Log.d("scale_selector", "" + checkedId);
+                if (checkedId == R.id.start0) {
+                    prefUtils.setGraphViewScaleStaringFromZero(true);
+                } else {
+                    prefUtils.setGraphViewScaleStaringFromZero(false);
+                }
+            }
+        });
+
+
+        Spinner graph_scale = findViewById(R.id.graph_scale);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.scale_in_g));
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); // The drop down view
+        graph_scale.setAdapter(spinnerArrayAdapter);
+        graph_scale.setSelection(prefUtils.getGraphScaleIndex());
+        graph_scale.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                prefUtils.setGraphScaleIndex(i);
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        final Spinner time_interval = findViewById(R.id.time_interval);
+        time_interval.setSelection(prefUtils.getTimeIntervalIndex());
+        time_interval.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                prefUtils.setTimeIntervalIndex(i);
+                DataSaveCsv.getInstance(ConfigsActivity.this).setSaveInterval(Integer.valueOf((String) time_interval.getSelectedItem()));
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
         });
 
     }
@@ -103,38 +144,21 @@ public class ConfigsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        SharedPreferences preferences = getSharedPreferences("configurations", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        PreferencesUtils prefUtils = new PreferencesUtils(this);
 
-        RadioGroup rg = findViewById(R.id.scale_selector);
-        Log.d("test", String.format("%d", rg.getCheckedRadioButtonId()));
+        prefUtils.saveAnyBoolean("sensor1gCbxChecked", ((CheckBox) findViewById(R.id.sensor1g)).isChecked());
+        prefUtils.saveAnyBoolean("sensor2gCbxChecked", ((CheckBox) findViewById(R.id.sensor2g)).isChecked());
+        prefUtils.saveAnyBoolean("sensor3gCbxChecked", ((CheckBox) findViewById(R.id.sensor3g)).isChecked());
+        prefUtils.saveAnyBoolean("sensor4gCbxChecked", ((CheckBox) findViewById(R.id.sensor4g)).isChecked());
+        prefUtils.saveAnyBoolean("sensor5gCbxChecked", ((CheckBox) findViewById(R.id.sensor5g)).isChecked());
+        prefUtils.saveAnyBoolean("sensor6gCbxChecked", ((CheckBox) findViewById(R.id.sensor6g)).isChecked());
 
-        editor.putFloat("scale", ((SeekBar)findViewById(R.id.graph_scale)).getProgress());
-        editor.putInt("time", ((SeekBar)findViewById(R.id.time_interval)).getProgress());
-
-        editor.putBoolean("sensor1g", ((CheckBox)findViewById(R.id.sensor1g)).isChecked());
-        editor.putBoolean("sensor2g", ((CheckBox)findViewById(R.id.sensor2g)).isChecked());
-        editor.putBoolean("sensor3g", ((CheckBox)findViewById(R.id.sensor3g)).isChecked());
-        editor.putBoolean("sensor4g", ((CheckBox)findViewById(R.id.sensor4g)).isChecked());
-        editor.putBoolean("sensor5g", ((CheckBox)findViewById(R.id.sensor5g)).isChecked());
-        editor.putBoolean("sensor6g", ((CheckBox)findViewById(R.id.sensor6g)).isChecked());
-
-        editor.putBoolean("sensor1a", ((CheckBox)findViewById(R.id.sensor1a)).isChecked());
-        editor.putBoolean("sensor2a", ((CheckBox)findViewById(R.id.sensor2a)).isChecked());
-        editor.putBoolean("sensor3a", ((CheckBox)findViewById(R.id.sensor3a)).isChecked());
-        editor.putBoolean("sensor4a", ((CheckBox)findViewById(R.id.sensor4a)).isChecked());
-        editor.putBoolean("sensor5a", ((CheckBox)findViewById(R.id.sensor5a)).isChecked());
-        editor.putBoolean("sensor6a", ((CheckBox)findViewById(R.id.sensor6a)).isChecked());
-
-        int checked = ((RadioGroup)findViewById(R.id.scale_selector)).getCheckedRadioButtonId();
-        if (checked == R.id.start0){
-            editor.putBoolean("start", true);
-        }
-        if (checked == R.id.startscale){
-            editor.putBoolean("start", false);
-        }
-
-        editor.apply();
+        prefUtils.saveAnyBoolean("sensor1aCbxChecked", ((CheckBox) findViewById(R.id.sensor1a)).isChecked());
+        prefUtils.saveAnyBoolean("sensor2aCbxChecked", ((CheckBox) findViewById(R.id.sensor2a)).isChecked());
+        prefUtils.saveAnyBoolean("sensor3aCbxChecked", ((CheckBox) findViewById(R.id.sensor3a)).isChecked());
+        prefUtils.saveAnyBoolean("sensor4aCbxChecked", ((CheckBox) findViewById(R.id.sensor4a)).isChecked());
+        prefUtils.saveAnyBoolean("sensor5aCbxChecked", ((CheckBox) findViewById(R.id.sensor5a)).isChecked());
+        prefUtils.saveAnyBoolean("sensor6aCbxChecked", ((CheckBox) findViewById(R.id.sensor6a)).isChecked());
 
         this.finish();
     }

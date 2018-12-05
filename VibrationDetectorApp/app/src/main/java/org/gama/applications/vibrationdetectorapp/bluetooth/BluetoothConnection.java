@@ -21,7 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Semaphore;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class BluetoothConnection {
@@ -53,7 +55,7 @@ public class BluetoothConnection {
 
     public void tryToConnect(String s) throws IOException {
 
-        deviceToConnect=s;
+        deviceToConnect = s;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -72,17 +74,13 @@ public class BluetoothConnection {
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
-            try {
-                findPairedDevices();
-            } catch (IOException e) {
-                Log.d("onActivityResult", e.getMessage());
-            }
-        } else {
+            findPairedDevices();
+        } else if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_CANCELED) {
+
             Toast.makeText(callingActivity, "You need to turn on the Bluetooth to use the app functions with the glove", Toast.LENGTH_LONG).show();
         }
 
     }
-
 
     public void disconnect() throws IOException {
         stopWorker = true;
@@ -100,7 +98,7 @@ public class BluetoothConnection {
     }
 
 
-    public void findPairedDevices() throws IOException {
+    public void findPairedDevices() {
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
@@ -112,13 +110,12 @@ public class BluetoothConnection {
         }
         if (mmDevice == null) {
             Toast.makeText(callingActivity, "The sensors isn't paired with this device", Toast.LENGTH_LONG).show();
-            throw new IOException("Sem conexão com os sensores");
         } else {
             try {
                 connectWithTheSensors();
             } catch (IOException ex) {
                 Toast.makeText(callingActivity, "Connection with sensors problem", Toast.LENGTH_LONG).show();
-                throw new IOException("Sem conexão com os sensores");
+                ex.printStackTrace();
             }
             readData();
         }
@@ -138,12 +135,9 @@ public class BluetoothConnection {
         Log.d("BT.sendAutoBaudCode", "Caractere U Sent");
     }
 
-    DataSaveCsv saveCsv = new DataSaveCsv(40);
-
 
     private void readData() {
 
-        saveCsv.swapAutoSavingGyro(callingActivity);
         stopWorker = false;
 
         Toast.makeText(callingActivity, "Connected", Toast.LENGTH_SHORT).show();
@@ -245,26 +239,43 @@ public class BluetoothConnection {
     }
 
 
+    private Semaphore s = new Semaphore(1,true);
     private Map<IPostAppendScreen, Runnable> runnablesList = new HashMap<>();
 
     private void executePostThreads() {
-
+        try {
+            s.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         for (IPostAppendScreen p : runnablesList.keySet()) {
             Runnable r = runnablesList.get(p);
-            if (r == null)
-                return;
-            callingActivity.runOnUiThread(r);
+            if (r != null)
+                callingActivity.runOnUiThread(r);
             System.out.println("graph append");
         }
+        s.release();
     }
 
 
     public void putPutDataAppendRunnable(IPostAppendScreen screen) {
+        try {
+            s.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         runnablesList.put(screen, screen.getPostAppendRunnable());
+        s.release();
     }
 
     public void removeMe(IPostAppendScreen screen) {
+        try {
+            s.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         runnablesList.remove(screen);
+        s.release();
     }
 
 
@@ -288,12 +299,13 @@ public class BluetoothConnection {
     }
 
 
-    private void  autoAppendValues(){
+    private void autoAppendValues() {
+        DataSaveCsv saveCsv = DataSaveCsv.getInstance(callingActivity);
 
         final GloveSensors glove = GloveSensors.getInstance();
-        if (saveCsv.getIsAutoSavingGyro()){
+        if (saveCsv.isAutoSavingGyro()) {
 
-            ArrayList<Double> arrGyro = new ArrayList<Double>(){{
+            ArrayList<Double> arrGyro = new ArrayList<Double>() {{
                 add(glove.getSensor1().getGx().lastElement());
                 add(glove.getSensor1().getGy().lastElement());
                 add(glove.getSensor1().getGz().lastElement());
@@ -315,12 +327,12 @@ public class BluetoothConnection {
 
             }};
 
-            saveCsv.appendModeGyro(arrGyro,callingActivity);
+            saveCsv.appendGyroData(arrGyro);
 
         }
 
-        if(saveCsv.getIsAutoSavingAcc()){
-            ArrayList<Double> arrAcc = new ArrayList<Double>(){{
+        if (saveCsv.isAutoSavingAcc()) {
+            ArrayList<Double> arrAcc = new ArrayList<Double>() {{
                 add(glove.getSensor1().getAx().lastElement());
                 add(glove.getSensor1().getAy().lastElement());
                 add(glove.getSensor1().getAz().lastElement());
@@ -341,7 +353,7 @@ public class BluetoothConnection {
                 add(glove.getSensor6().getAz().lastElement());
 
             }};
-            saveCsv.appendModeAcc(arrAcc,callingActivity);
+            saveCsv.appendAccData(arrAcc);
 
         }
         Log.d("teste", "teta");
