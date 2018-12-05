@@ -147,11 +147,12 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
 
 
         PreferencesUtils prefUtils = new PreferencesUtils(this);
+        Log.d("mainActivity", "isSavingAccEnabled()"+prefUtils.isSavingAccEnabled());
+        Log.d("mainActivity", "isSavingGyroEnabled()"+prefUtils.isSavingGyroEnabled());
         if (prefUtils.isSavingAccEnabled())
             DataSaveCsv.getInstance(this).turnOnAutoSavingAcc();
         else
             DataSaveCsv.getInstance(this).turnOffAutoSavingAcc();
-
         if (prefUtils.isSavingGyroEnabled())
             DataSaveCsv.getInstance(this).turnOnAutoSavingGyro();
         else
@@ -192,12 +193,12 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
                 if (isChecked) {
                     if (!PermissionUtils.INSTANCE.validate(MainActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                         Toast.makeText(MainActivity.this, "Please, give storage permission", Toast.LENGTH_SHORT).show();
+                        connect.setChecked(false);
                     } else {
                         try {
                             bluetoothConnection.tryToConnect(new PreferencesUtils(MainActivity.this).getSavedGlove());
-                        } catch (IOException ex) {
-                            Toast.makeText(MainActivity.this, "Problem with Bluetooth Connection", Toast.LENGTH_SHORT).show();
-                            Log.d("tryToConnect", ex.getMessage());
+                        } catch (BluetoothConnection.BluetoothNotEnabledExcpetion bluetoothNotEnabledExcpetion) {
+                            Toast.makeText(MainActivity.this, "Bluetooth not enabled. Please, enable it", Toast.LENGTH_LONG).show();
                             connect.setChecked(false);
                         }
                     }
@@ -340,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
         graph_gx.getViewport().setScalableY(true);
         graph_gy.getViewport().setScalableY(true);
         graph_gz.getViewport().setScalableY(true);
-        if (prefUtils.isGraphViewScaleStaringFromZero()) {
+        if (!prefUtils.isGraphViewScaleStaringFromZero()) {
             graph_ax.getViewport().setMinY(-scale);
             graph_ay.getViewport().setMinY(-scale);
             graph_az.getViewport().setMinY(-scale);
@@ -364,7 +365,6 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
         graph_gz.getViewport().setMaxY(scale);
 
 
-        graph_ax.refreshDrawableState();
         //Configuração das series com base nos checkbox dos sensores
         if (prefUtils.getAnyBoolean("sensor1g", true)) {
             if (!graph_gx.getSeries().contains(seriesx1_giro)) {

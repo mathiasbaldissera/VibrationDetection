@@ -53,7 +53,7 @@ public class BluetoothConnection {
 
     private String deviceToConnect;
 
-    public void tryToConnect(String s) throws IOException {
+    public void tryToConnect(String s) throws BluetoothNotEnabledExcpetion {
 
         deviceToConnect = s;
 
@@ -65,6 +65,7 @@ public class BluetoothConnection {
         if (!mBluetoothAdapter.isEnabled()) {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             callingActivity.startActivityForResult(enableBluetooth, REQUEST_ENABLE_BT);
+            throw new BluetoothNotEnabledExcpetion("Bluetooth not Connected");
         } else {
             findPairedDevices();
         }
@@ -76,7 +77,6 @@ public class BluetoothConnection {
         if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
             findPairedDevices();
         } else if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_CANCELED) {
-
             Toast.makeText(callingActivity, "You need to turn on the Bluetooth to use the app functions with the glove", Toast.LENGTH_LONG).show();
         }
 
@@ -239,7 +239,7 @@ public class BluetoothConnection {
     }
 
 
-    private Semaphore s = new Semaphore(1,true);
+    private Semaphore s = new Semaphore(1, true);
     private Map<IPostAppendScreen, Runnable> runnablesList = new HashMap<>();
 
     private void executePostThreads() {
@@ -357,6 +357,13 @@ public class BluetoothConnection {
 
         }
         Log.d("teste", "teta");
+    }
+
+    public class BluetoothNotEnabledExcpetion extends Exception {
+        public BluetoothNotEnabledExcpetion(String s) {
+            super(s);
+
+        }
     }
 }
 

@@ -3,6 +3,7 @@ package org.gama.applications.vibrationdetectorapp.uncoupledprograms;
 import android.content.Context;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.gama.applications.vibrationdetectorapp.PreferencesUtils;
 
@@ -70,9 +71,10 @@ public class DataSaveCsv<E> {
      * turn on the auto saving gyroscope data feature
      */
     public void turnOnAutoSavingGyro() {
+        Log.d("turnOnAutoSavingGyro", "turnOn");
         if (!this.isAutoSavingGyro) {
             this.gyroAutoSaveFileName = getGyroAutoSaveFileName();
-            this.isAutoSavingAcc = true;
+            this.isAutoSavingGyro = true;
         }
     }
 
@@ -80,6 +82,7 @@ public class DataSaveCsv<E> {
      * turn off the auto saving gyroscope data feature, save the pendent data and reset the list
      */
     public void turnOffAutoSavingGyro() {
+        Log.d("turnOnAutoSavingGyro", "turnOff");
         if (this.isAutoSavingGyro) {
             this.appendToCsv(this.autoAppendGyroList, this.gyroAutoSaveFileName);
             this.autoAppendGyroList = new ArrayList<ArrayList<E>>();

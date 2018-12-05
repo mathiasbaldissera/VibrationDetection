@@ -58,6 +58,8 @@ public class ConfigsActivity extends AppCompatActivity {
 
         CheckBox saveAccDataCbx = findViewById(R.id.save_acc_data_cbx);
         CheckBox saveGyroDataCbx = findViewById(R.id.save_gyro_data_cbx);
+        Log.d("configsActivity", "isSavingAccEnabled()"+prefUtils.isSavingAccEnabled());
+        Log.d("configsActivity", "isSavingGyroEnabled()"+prefUtils.isSavingGyroEnabled());
 
         saveAccDataCbx.setChecked(prefUtils.isSavingAccEnabled());
         saveGyroDataCbx.setChecked(prefUtils.isSavingGyroEnabled());
