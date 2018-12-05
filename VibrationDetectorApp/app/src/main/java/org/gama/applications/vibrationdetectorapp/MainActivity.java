@@ -366,7 +366,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
 
 
         //Configuração das series com base nos checkbox dos sensores
-        if (prefUtils.getAnyBoolean("sensor1g", true)) {
+        if (prefUtils.getAnyBoolean("sensor1gCbxChecked", true)) {
             if (!graph_gx.getSeries().contains(seriesx1_giro)) {
                 graph_gx.addSeries(seriesx1_giro);
                 graph_gy.addSeries(seriesy1_giro);
@@ -377,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy1_giro);
             graph_gz.removeSeries(seriesz1_giro);
         }
-        if (prefUtils.getAnyBoolean("sensor2g", true)) {
+        if (prefUtils.getAnyBoolean("sensor2gCbxChecked", true)) {
             if (!graph_gx.getSeries().contains(seriesx2_giro)) {
                 graph_gx.addSeries(seriesx2_giro);
                 graph_gy.addSeries(seriesy2_giro);
@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy2_giro);
             graph_gz.removeSeries(seriesz2_giro);
         }
-        if (prefUtils.getAnyBoolean("sensor3g", true)) {
+        if (prefUtils.getAnyBoolean("sensor3gCbxChecked", true)) {
             if (!graph_gx.getSeries().contains(seriesx3_giro)) {
                 graph_gx.addSeries(seriesx3_giro);
                 graph_gy.addSeries(seriesy3_giro);
@@ -399,7 +399,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy3_giro);
             graph_gz.removeSeries(seriesz3_giro);
         }
-        if (prefUtils.getAnyBoolean("sensor4g", true)) {
+        if (prefUtils.getAnyBoolean("sensor4gCbxChecked", true)) {
             if (!graph_gx.getSeries().contains(seriesx4_giro)) {
                 graph_gx.addSeries(seriesx4_giro);
                 graph_gy.addSeries(seriesy4_giro);
@@ -410,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy4_giro);
             graph_gz.removeSeries(seriesz4_giro);
         }
-        if (prefUtils.getAnyBoolean("sensor5g", true)) {
+        if (prefUtils.getAnyBoolean("sensor5gCbxChecked", true)) {
             if (!graph_gx.getSeries().contains(seriesx5_giro)) {
                 graph_gx.addSeries(seriesx5_giro);
                 graph_gy.addSeries(seriesy5_giro);
@@ -421,7 +421,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy5_giro);
             graph_gz.removeSeries(seriesz5_giro);
         }
-        if (prefUtils.getAnyBoolean("sensor6g", true)) {
+        if (prefUtils.getAnyBoolean("sensor6gCbxChecked", true)) {
             if (!graph_gx.getSeries().contains(seriesx6_giro)) {
                 graph_gx.addSeries(seriesx6_giro);
                 graph_gy.addSeries(seriesy6_giro);
@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_gy.removeSeries(seriesy6_giro);
             graph_gz.removeSeries(seriesz6_giro);
         }
-        if (prefUtils.getAnyBoolean("sensor1a", true)) {
+        if (prefUtils.getAnyBoolean("sensor1aCbxChecked", true)) {
             if (!graph_ax.getSeries().contains(seriesx1_acc)) {
                 graph_ax.addSeries(seriesx1_acc);
                 graph_ay.addSeries(seriesy1_acc);
@@ -443,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy1_acc);
             graph_az.removeSeries(seriesz1_acc);
         }
-        if (prefUtils.getAnyBoolean("sensor2a", true)) {
+        if (prefUtils.getAnyBoolean("sensor2aCbxChecked", true)) {
             if (!graph_ax.getSeries().contains(seriesx2_acc)) {
                 graph_ax.addSeries(seriesx2_acc);
                 graph_ay.addSeries(seriesy2_acc);
@@ -454,7 +454,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy2_acc);
             graph_az.removeSeries(seriesz2_acc);
         }
-        if (prefUtils.getAnyBoolean("sensor3a", true)) {
+        if (prefUtils.getAnyBoolean("sensor3aCbxChecked", true)) {
             if (!graph_ax.getSeries().contains(seriesx3_acc)) {
                 graph_ax.addSeries(seriesx3_acc);
                 graph_ay.addSeries(seriesy3_acc);
@@ -465,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy3_acc);
             graph_az.removeSeries(seriesz3_acc);
         }
-        if (prefUtils.getAnyBoolean("sensor4a", true)) {
+        if (prefUtils.getAnyBoolean("sensor4aCbxChecked", true)) {
             if (!graph_ax.getSeries().contains(seriesx4_acc)) {
                 graph_ax.addSeries(seriesx4_acc);
                 graph_ay.addSeries(seriesy4_acc);
@@ -476,7 +476,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy4_acc);
             graph_az.removeSeries(seriesz4_acc);
         }
-        if (prefUtils.getAnyBoolean("sensor5a", true)) {
+        if (prefUtils.getAnyBoolean("sensor5aCbxChecked", true)) {
             if (!graph_ax.getSeries().contains(seriesx5_acc)) {
                 graph_ax.addSeries(seriesx5_acc);
                 graph_ay.addSeries(seriesy5_acc);
@@ -487,7 +487,7 @@ public class MainActivity extends AppCompatActivity implements IPostAppendScreen
             graph_ay.removeSeries(seriesy5_acc);
             graph_az.removeSeries(seriesz5_acc);
         }
-        if (prefUtils.getAnyBoolean("sensor6a", true)) {
+        if (prefUtils.getAnyBoolean("sensor6aCbxChecked", true)) {
             if (!graph_ax.getSeries().contains(seriesx6_acc)) {
                 graph_ax.addSeries(seriesx6_acc);
                 graph_ay.addSeries(seriesy6_acc);
