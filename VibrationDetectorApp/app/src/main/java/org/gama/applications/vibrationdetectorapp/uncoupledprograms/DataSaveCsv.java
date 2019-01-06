@@ -86,7 +86,7 @@ public class DataSaveCsv<E> {
         if (this.isAutoSavingGyro) {
             this.appendToCsv(this.autoAppendGyroList, this.gyroAutoSaveFileName);
             this.autoAppendGyroList = new ArrayList<ArrayList<E>>();
-            this.isAutoSavingAcc = false;
+            this.isAutoSavingGyro = false;
         }
 
     }
